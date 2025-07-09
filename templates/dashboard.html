@@ -1,0 +1,239 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftCollect - Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-recycle"></i>
+                <span>SwiftCollect</span>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-item active">
+                    <i class="fas fa-robot"></i>
+                    <span>Benny AI</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-flag"></i>
+                    <span>Bin Fill Status</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-truck"></i>
+                    <span>Pickup's</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Recycle house</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-wifi"></i>
+                    <span>IoT Device Manager</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Report</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>Messages</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1>Dashboard</h1>
+                <div class="header-actions">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search">
+                    </div>
+                    <button class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Top Row -->
+                <div class="top-row">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span>Total pickups in March</span>
+                        </div>
+                        <div class="stat-value">
+                            <span class="main-number">54.56</span>
+                            <span class="unit">Tons based on 1653 pick-ups</span>
+                        </div>
+                        <div class="trend-chart">
+                            <canvas id="pickupTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span>Valuable waste</span>
+                        </div>
+                        <div class="stat-value">
+                            <span class="main-number">75%</span>
+                            <span class="badge good">Good</span>
+                        </div>
+                        <div class="waste-breakdown">
+                            <div class="breakdown-item">
+                                <div class="bar metal" style="height: 80%"></div>
+                                <span>Metal</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="bar plastic" style="height: 60%"></div>
+                                <span>Plastic</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="bar electronic" style="height: 70%"></div>
+                                <span>Electronic</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="bar paper" style="height: 90%"></div>
+                                <span>Paper</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="bar other" style="height: 40%"></div>
+                                <span>Other</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle Row -->
+                <div class="middle-row">
+                    <div class="revenue-card">
+                        <div class="revenue-item">
+                            <span class="label">Exported</span>
+                            <div class="amount">$24.4<span class="unit">Mn</span></div>
+                            <div class="change positive">+4,234 Tons</div>
+                        </div>
+                        <div class="revenue-item">
+                            <span class="label">Surplus</span>
+                            <div class="amount">$43.82<span class="unit">Mn</span></div>
+                            <div class="change positive">+8,393 Tons</div>
+                        </div>
+                    </div>
+
+                    <div class="market-card">
+                        <div class="market-header">
+                            <span>Market place requirements</span>
+                        </div>
+                        <div class="market-stat">
+                            <span class="number">22</span>
+                            <span class="badge active">Active</span>
+                            <span class="text">From 21 companies</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Row -->
+                <div class="bottom-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <span>Scheduled vs pickups</span>
+                            <span class="percentage">54%</span>
+                            <span class="label">Average</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="scheduledChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Material type</th>
+                                    <th>Location</th>
+                                    <th>Weight</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Doe</td>
+                                    <td>Electronics</td>
+                                    <td>California</td>
+                                    <td>10 Tons</td>
+                                </tr>
+                                <tr>
+                                    <td>Hassan Ibrahim</td>
+                                    <td>Metal</td>
+                                    <td>New York</td>
+                                    <td>50 Tons</td>
+                                </tr>
+                                <tr>
+                                    <td>Peter Johnson</td>
+                                    <td>Plastic</td>
+                                    <td>Oklahoma</td>
+                                    <td>20 Tons</td>
+                                </tr>
+                                <tr>
+                                    <td>Peter Johnson</td>
+                                    <td>Plastic</td>
+                                    <td>Oklahoma</td>
+                                    <td>20 Tons</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bottom Charts Row -->
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <span>Pickup stream</span>
+                        </div>
+                        <div class="stream-chart">
+                            <canvas id="streamChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <span>Pickup ratio</span>
+                        </div>
+                        <div class="ratio-chart">
+                            <canvas id="ratioChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <span>IoT device status</span>
+                        </div>
+                        <div class="device-status">
+                            <canvas id="deviceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+
+</html>

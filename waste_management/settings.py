@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'services',
-    'payment'
+    'payment',
+    'collection_route',
 ]
 
 MIDDLEWARE = [

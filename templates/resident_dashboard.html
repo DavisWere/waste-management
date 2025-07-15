@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftCollect - Resident Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/resident_dashboard.css' %}">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">
+                <h2>SwiftCollect</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active">
+                    <span class="nav-icon">👤</span>
+                    <span>SwiftCollect AI</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span>Bin Fill Status</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-icon">🗑️</span>
+                    <span>Pickups</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-icon">♻️</span>
+                    <span>Recycle house</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-icon">📱</span>
+                    <span>IoT Device Manager</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>Report</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-icon">💬</span>
+                    <span>Messages</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1>Dashboard</h1>
+                <div class="search-container">
+                    <input type="text" placeholder="Search" class="search-input">
+                    <span class="search-icon">🔍</span>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Top Stats Row -->
+                <div class="stats-row">
+                    <!-- Total Pickups -->
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <h3>Total pickups in March</h3>
+                            <div class="trend-chart">
+                                <canvas id="pickupTrendChart" width="100" height="30"></canvas>
+                            </div>
+                        </div>
+                        <div class="stat-number">54.56</div>
+                        <div class="stat-subtitle">Tons based on 1653 pickups</div>
+                    </div>
+
+                    <!-- Valuable Waste -->
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <h3>Valuable waste</h3>
+                            <div class="percentage-badge good">75%</div>
+                        </div>
+                        <div class="waste-chart">
+                            <canvas id="wasteChart" width="200" height="100"></canvas>
+                        </div>
+                        <div class="chart-legend">
+                            <span class="legend-item">
+                                <span class="legend-color metal"></span>
+                                Metal
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color plastic"></span>
+                                Plastic
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color electronic"></span>
+                                Electronic
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color paper"></span>
+                                Paper
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color other"></span>
+                                Other
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Row -->
+                <div class="stats-row">
+                    <!-- Exported/Surplus -->
+                    <div class="stat-card half-width">
+                        <div class="export-surplus">
+                            <div class="export-section">
+                                <h4>Exported</h4>
+                                <div class="amount">$24.4 <span class="unit">Mn</span></div>
+                                <div class="change positive">↗ 4,234 Tons</div>
+                            </div>
+                            <div class="surplus-section">
+                                <h4>Surplus</h4>
+                                <div class="amount">$43.82 <span class="unit">Mn</span></div>
+                                <div class="change positive">↗ 8,393 Tons</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Market Requirements -->
+                    <div class="stat-card half-width">
+                        <div class="market-header">
+                            <h3>Market place requirements</h3>
+                            <div class="market-stats">
+                                <span class="count">22</span>
+                                <span class="status active">Active</span>
+                                <span class="from">From 21 companies</span>
+                            </div>
+                        </div>
+                        <div class="requirements-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Material type</th>
+                                        <th>Location</th>
+                                        <th>Weight</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>John Deo</td>
+                                        <td>Electronics</td>
+                                        <td>California</td>
+                                        <td>10 Ton</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hassan Ibrahim</td>
+                                        <td>Metal</td>
+                                        <td>New York</td>
+                                        <td>50 Ton</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Peter Johnson</td>
+                                        <td>Plastic</td>
+                                        <td>Oklahoma</td>
+                                        <td>20 Ton</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Peter Johnson</td>
+                                        <td>Plastic</td>
+                                        <td>Oklahoma</td>
+                                        <td>20 Ton</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Third Row -->
+                <div class="stats-row">
+                    <!-- Scheduled vs Pickups Chart -->
+                    <div class="stat-card">
+                        <div class="chart-header">
+                            <h3>Scheduled vs pickups</h3>
+                            <div class="chart-percentage">54% <span class="average">Average</span></div>
+                        </div>
+                        <div class="bar-chart">
+                            <canvas id="scheduledChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Pickup Ratio -->
+                    <div class="stat-card">
+                        <h3>Pickup ratio</h3>
+                        <div class="ratio-chart">
+                            <canvas id="ratioChart" width="200" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- IoT Device Status -->
+                    <div class="stat-card">
+                        <h3>IoT device status</h3>
+                        <div class="device-status">
+                            <canvas id="deviceChart" width="200" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Row -->
+                <div class="stats-row">
+                    <!-- Pickup Stream -->
+                    <div class="stat-card">
+                        <h3>Pickup stream</h3>
+                        <div class="stream-chart">
+                            <canvas id="streamChart" width="300" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{% static 'js/resident_dashboard.js' %}"></script>
+</body>
+
+</html>

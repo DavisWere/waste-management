@@ -15,6 +15,7 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
+            print(user)
 
             # Redirect based on user type
             if user.user_type == "resident":

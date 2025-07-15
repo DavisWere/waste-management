@@ -39,19 +39,17 @@ class WasteBin(models.Model):
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bins')
-    bin_id = models.CharField(max_length=50, unique=True)
+    bin_id = models.CharField(max_length=50, unique=True, null=True, blank=True)
     size = models.CharField(max_length=20, choices=BIN_SIZES)
     waste_type = models.ForeignKey(WasteType, on_delete=models.CASCADE)
     capacity = models.DecimalField(max_digits=8, decimal_places=2)  # in liters
     current_fill_level = models.DecimalField(max_digits=5, decimal_places=2, default=0)  # percentage
     status = models.CharField(max_length=20, choices=BIN_STATUS, default='active')
-    location_lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    location_lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.bin_id} - {self.resident.user.username}"
+        return f"{self.bin_id} - {self.user.username}"
     
     @property
     def is_full(self):

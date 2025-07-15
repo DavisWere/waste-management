@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'services',
     'payment',
     'collection_route',
+    'notification'
 ]
 
 MIDDLEWARE = [

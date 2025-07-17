@@ -88,7 +88,7 @@ class PickupSchedule(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.resident.user.username} - {self.frequency} {self.pickup_day}"
+        return f"{self.user.username} - {self.frequency} {self.pickup_day}"
     
 
 class WastePickup(models.Model):
@@ -114,7 +114,7 @@ class WastePickup(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.resident.user.username} - {self.pickup_date.strftime('%Y-%m-%d')}"
+        return f"{self.user.username} - {self.pickup_date.strftime('%Y-%m-%d')}"
     
     @property
     def is_completed(self):

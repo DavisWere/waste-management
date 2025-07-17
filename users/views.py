@@ -6,6 +6,7 @@ def dashboard(request):
     return render(request, 'dashboard.html')
 
 
+
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")

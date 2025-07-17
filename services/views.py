@@ -3,7 +3,9 @@ from django.contrib import messages
 from .models import WasteBin, WasteType
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from decimal import Decimal
 from .models import PickupSchedule, WastePickup, WasteType
+from payment.models import Payment
 
 @login_required(login_url='/login/')
 def waste_bins(request):
@@ -47,40 +49,27 @@ def pickup_schedules(request):
 def resident_pickup_schedules(request):
     if request.method == 'POST':
         try:
-            # Handle schedule creation
-            if 'create_schedule' in request.POST:
-                PickupSchedule.objects.create(
-                    user=request.user,
-                    waste_type_id=request.POST.get('waste_type'),
-                    frequency=request.POST.get('frequency'),
-                    pickup_day=request.POST.get('pickup_day'),
-                    pickup_time=request.POST.get('pickup_time'),
-                    is_active=True
+            # Handle payment
+            if 'make_payment' in request.POST:
+                pickup = get_object_or_404(WastePickup, id=request.POST.get('pickup_id'), user=request.user)
+                amount = Decimal(request.POST.get('amount'))
+                
+                payment = Payment.objects.create(
+                    waste=pickup.transactions.first(),  # Assuming one transaction per pickup
+                    amount=amount,
+                    method=request.POST.get('payment_method'),
+                    transaction_id=request.POST.get('transaction_id', ''),
+                    is_paid=True,
+                    paid_at=timezone.now()
                 )
-                messages.success(request, "Pickup schedule created successfully!")
+                messages.success(request, "Payment successful! Your pickup is now confirmed.")
+                return redirect('pickup_schedules')
             
-            # Handle schedule update
-            elif 'update_schedule' in request.POST:
-                schedule = get_object_or_404(PickupSchedule, id=request.POST.get('schedule_id'), user=request.user)
-                schedule.frequency = request.POST.get('frequency')
-                schedule.pickup_day = request.POST.get('pickup_day')
-                schedule.pickup_time = request.POST.get('pickup_time')
-                schedule.is_active = request.POST.get('is_active') == 'on'
-                schedule.save()
-                messages.success(request, "Schedule updated successfully!")
+            # Handle other resident actions...
             
-            # Handle schedule deletion
-            elif 'delete_schedule' in request.POST:
-                schedule = get_object_or_404(PickupSchedule, id=request.POST.get('schedule_id'), user=request.user)
-                schedule.delete()
-                messages.success(request, "Schedule deleted successfully!")
-            
-            return redirect('pickup_schedules')
-        
         except Exception as e:
             messages.error(request, f"Error: {str(e)}")
     
-    # Get all data for template
     schedules = PickupSchedule.objects.filter(user=request.user)
     waste_types = WasteType.objects.all()
     upcoming_pickups = WastePickup.objects.filter(
@@ -94,33 +83,32 @@ def resident_pickup_schedules(request):
         'upcoming_pickups': upcoming_pickups,
         'frequency_choices': dict(PickupSchedule.FREQUENCY_CHOICES),
         'day_choices': dict(PickupSchedule.DAY_CHOICES),
+        'payment_methods': dict(Payment.PAYMENT_METHODS),
     }
     return render(request, 'resident_pickups.html', context)
 
 def collector_pickup_schedules(request):
     if request.method == 'POST':
         try:
-            # Handle pickup status update
-            if 'update_status' in request.POST:
+            # Handle pickup verification
+            if 'verify_pickup' in request.POST:
                 pickup = get_object_or_404(WastePickup, id=request.POST.get('pickup_id'))
-                pickup.status = request.POST.get('status')
                 
-                if pickup.status == 'completed':
-                    pickup.actual_pickup_date = timezone.now()
-                    pickup.driver_name = request.POST.get('driver_name', '')
-                    pickup.driver_contact = request.POST.get('driver_contact', '')
-                    pickup.weight_collected = request.POST.get('weight_collected')
-                    pickup.notes = request.POST.get('notes', '')
+                # Check if payment exists
+                if not pickup.transactions.exists() or not pickup.transactions.first().payment_set.exists():
+                    messages.error(request, "Cannot verify - payment not received")
+                    return redirect('pickup_schedules')
                 
+                # Update pickup status
+                pickup.status = 'in_progress'
                 pickup.save()
-                messages.success(request, "Pickup status updated successfully!")
+                messages.success(request, "Pickup verified and marked as in progress")
             
-            return redirect('pickup_schedules')
-        
+            # Handle other collector actions...
+            
         except Exception as e:
             messages.error(request, f"Error: {str(e)}")
     
-    # Get all scheduled pickups for this collector
     today = timezone.now().date()
     scheduled_pickups = WastePickup.objects.filter(
         pickup_date__date__gte=today,
@@ -136,4 +124,8 @@ def collector_pickup_schedules(request):
 
 def resident_dashboard(request):
     return render(request, 'resident_dashboard.html')
+
+def collector_dashboard(request):
+    return render(request, 'collector_dashboard.html')
+
  

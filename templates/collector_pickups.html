@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Pickup Management</title>
+</head>
+
+<body>
+    <h1>Waste Pickup Management</h1>
+
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h2>Scheduled Pickups</h2>
+    {% if scheduled_pickups %}
+    <table>
+        <thead>
+            <tr>
+                <th>Resident</th>
+                <th>Date & Time</th>
+                <th>Waste Type</th>
+                <th>Bin Size</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pickup in scheduled_pickups %}
+            <tr>
+                <td>{{ pickup.user.username }}</td>
+                <td>{{ pickup.pickup_date }}</td>
+                <td>{{ pickup.bin.waste_type.name }}</td>
+                <td>{{ pickup.bin.get_size_display }}</td>
+                <td>{{ pickup.get_status_display }}</td>
+                <td>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="pickup_id" value="{{ pickup.id }}">
+                        <input type="hidden" name="update_status" value="1">
+
+                        <select name="status">
+                            {% for value, label in status_choices.items %}
+                            <option value="{{ value }}" {% if pickup.status==value %}selected{% endif %}>{{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+
+                        {% if pickup.status == 'completed' or request.POST.get('status') == 'completed' %}
+                        <div>
+                            <label>Weight Collected (kg):</label>
+                            <input type="number" name="weight_collected" step="0.01"
+                                value="{{ pickup.weight_collected|default:'' }}">
+                        </div>
+                        <div>
+                            <label>Driver Name:</label>
+                            <input type="text" name="driver_name" value="{{ pickup.driver_name|default:'' }}">
+                        </div>
+                        <div>
+                            <label>Driver Contact:</label>
+                            <input type="text" name="driver_contact" value="{{ pickup.driver_contact|default:'' }}">
+                        </div>
+                        <div>
+                            <label>Notes:</label>
+                            <textarea name="notes">{{ pickup.notes|default:'' }}</textarea>
+                        </div>
+                        {% endif %}
+
+                        <button type="submit">Update</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No pickups scheduled.</p>
+    {% endif %}
+</body>
+
+</html>

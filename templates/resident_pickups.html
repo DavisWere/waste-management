@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Pickup Schedules</title>
+</head>
+
+<body>
+    <h1>My Waste Pickup Schedules</h1>
+
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h2>Create New Schedule</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="create_schedule" value="1">
+
+        <div>
+            <label>Waste Type:</label>
+            <select name="waste_type" required>
+                {% for waste_type in waste_types %}
+                <option value="{{ waste_type.id }}">{{ waste_type.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label>Frequency:</label>
+            <select name="frequency" required>
+                {% for value, label in frequency_choices.items %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label>Pickup Day:</label>
+            <select name="pickup_day" required>
+                {% for value, label in day_choices.items %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label>Pickup Time:</label>
+            <input type="time" name="pickup_time" required>
+        </div>
+
+        <button type="submit">Create Schedule</button>
+    </form>
+
+    <h2>My Schedules</h2>
+    {% if schedules %}
+    <table>
+        <thead>
+            <tr>
+                <th>Waste Type</th>
+                <th>Frequency</th>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in schedules %}
+            <tr>
+                <td>{{ schedule.waste_type.name }}</td>
+                <td>{{ schedule.get_frequency_display }}</td>
+                <td>{{ schedule.get_pickup_day_display }}</td>
+                <td>{{ schedule.pickup_time }}</td>
+                <td>{% if schedule.is_active %}Active{% else %}Inactive{% endif %}</td>
+                <td>
+                    <form method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="schedule_id" value="{{ schedule.id }}">
+                        <input type="hidden" name="update_schedule" value="1">
+                        <button type="submit">Edit</button>
+                    </form>
+                    <form method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="schedule_id" value="{{ schedule.id }}">
+                        <input type="hidden" name="delete_schedule" value="1">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No pickup schedules found.</p>
+    {% endif %}
+
+    <h2>Upcoming Pickups</h2>
+    {% if upcoming_pickups %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Waste Type</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pickup in upcoming_pickups %}
+            <tr>
+                <td>{{ pickup.pickup_date|date:"Y-m-d" }}</td>
+                <td>{{ pickup.pickup_date|time }}</td>
+                <td>{{ pickup.bin.waste_type.name }}</td>
+                <td>{{ pickup.get_status_display }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No upcoming pickups scheduled.</p>
+    {% endif %}
+</body>
+
+</html>

@@ -97,10 +97,11 @@ def resident_pickup_schedules(request):
     return render(request, 'resident_pickups.html', context)
 
 
-
+@login_required(login_url='/login/')
 def resident_dashboard(request):
     return render(request, 'resident_dashboard.html')
 
+@login_required(login_url='/login/')
 def collector_dashboard(request):
     return render(request, 'collector_dashboard.html')
 

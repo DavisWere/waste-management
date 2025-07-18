@@ -2,8 +2,8 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
-def dashboard(request):
-    return render(request, 'dashboard.html')
+def home(request):
+    return render(request, 'home.html')
 
 
 

@@ -79,10 +79,10 @@ class PickupSchedule(models.Model):
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schedules')
-    waste_type = models.ForeignKey(WasteType, on_delete=models.CASCADE)
+    waste_type = models.ForeignKey(WasteType, on_delete=models.CASCADE, null=True, blank=True)
     frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES, null=True)
-    pickup_day = models.CharField(max_length=20, choices=DAY_CHOICES)
-    pickup_time = models.TimeField()
+    pickup_day = models.CharField(max_length=20, choices=DAY_CHOICES, null=True, blank=True)
+    pickup_time = models.TimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

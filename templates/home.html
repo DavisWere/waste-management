@@ -1,0 +1,262 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftCollect - Smart Waste Management Solutions</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>SwiftCollect</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="{% url 'login' %}" class="nav-login">Login</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Smart Waste Management for a Cleaner Tomorrow</h1>
+                <p>Revolutionize your waste collection with our intelligent tracking system. Monitor pickups, optimize
+                    routes, and contribute to a sustainable future.</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn btn-primary">Get Started</a>
+                    <a href="#services" class="btn btn-secondary">Learn More</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="hero-graphic">
+                    <div class="waste-icon"></div>
+                    <div class="recycling-symbol"></div>
+                    <div class="truck-icon"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <h3>10,000+</h3>
+                <p>Pickups Completed</p>
+            </div>
+            <div class="stat-item">
+                <h3>500+</h3>
+                <p>Active Clients</p>
+            </div>
+            <div class="stat-item">
+                <h3>75%</h3>
+                <p>Recycling Rate</p>
+            </div>
+            <div class="stat-item">
+                <h3>24/7</h3>
+                <p>Support Available</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="services-container">
+            <h2>Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <div class="icon-pickup"></div>
+                    </div>
+                    <h3>Smart Pickup Tracking</h3>
+                    <p>Real-time monitoring of waste collection with automated scheduling and route optimization.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <div class="icon-analytics"></div>
+                    </div>
+                    <h3>Waste Analytics</h3>
+                    <p>Detailed insights into waste generation patterns and recycling performance metrics.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <div class="icon-iot"></div>
+                    </div>
+                    <h3>IoT Integration</h3>
+                    <p>Smart bins with sensors for fill-level monitoring and predictive maintenance.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <div class="icon-report"></div>
+                    </div>
+                    <h3>Custom Reports</h3>
+                    <p>Comprehensive reporting tools for compliance and sustainability tracking.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="features-container">
+            <div class="feature-content">
+                <h2>Why Choose SwiftCollect?</h2>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-check"></div>
+                        <div>
+                            <h4>Automated Scheduling</h4>
+                            <p>Never miss a pickup with our intelligent scheduling system</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-check"></div>
+                        <div>
+                            <h4>Real-time Tracking</h4>
+                            <p>Track your waste collection in real-time with live updates</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-check"></div>
+                        <div>
+                            <h4>Sustainability Metrics</h4>
+                            <p>Monitor your environmental impact and recycling progress</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-check"></div>
+                        <div>
+                            <h4>Cost Optimization</h4>
+                            <p>Reduce operational costs with efficient route planning</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-visual">
+                <div class="dashboard-preview">
+                    <div class="preview-header">
+                        <div class="preview-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="preview-content">
+                        <div class="preview-chart"></div>
+                        <div class="preview-stats">
+                            <div class="preview-stat"></div>
+                            <div class="preview-stat"></div>
+                            <div class="preview-stat"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="about-container">
+            <div class="about-content">
+                <h2>About SwiftCollect</h2>
+                <p>We're revolutionizing waste management through innovative technology and sustainable practices. Our
+                    platform connects waste generators with collection services, providing transparency, efficiency, and
+                    environmental responsibility.</p>
+                <p>With over 10,000 successful pickups and a 75% recycling rate, we're making a real difference in
+                    communities worldwide.</p>
+                <div class="about-stats">
+                    <div class="about-stat">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Years Experience</span>
+                    </div>
+                    <div class="about-stat">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Cities Served</span>
+                    </div>
+                    <div class="about-stat">
+                        <span class="stat-number">99%</span>
+                        <span class="stat-label">Uptime</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-container">
+            <div class="cta-content">
+                <h2>Ready to Transform Your Waste Management</h2>
+                <p>Join thousands of satisfied customers who have streamlined their waste collection process.</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn btn-primary">Start Free Trial</a>
+                    <a href="#contact" class="btn btn-outline">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>SwiftCollect</h3>
+                    <p>Smart waste management solutions for a sustainable future.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link">Facebook</a>
+                        <a href="#" class="social-link">Twitter</a>
+                        <a href="#" class="social-link">LinkedIn</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#">Pickup Tracking</a></li>
+                        <li><a href="#">Waste Analytics</a></li>
+                        <li><a href="#">IoT Integration</a></li>
+                        <li><a href="#">Custom Reports</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: info@SwiftCollect.com</p>
+                    <p>Phone: +1 (555) 123-4567</p>
+                    <p>Address: 123 Green Street, Eco City, EC 12345</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SwiftCollect. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/home.js' %}"></script>
+</body>
+
+</html>

@@ -1,130 +1,146 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Pickup Schedules</title>
+    <link rel="stylesheet" href="{% static 'css/resident_pickup.css' %}">
 </head>
 
 <body>
-    <h1>My Waste Pickup Schedules</h1>
-    <a href="/resident/dashboard/">Back to Dashboard</a>
+    <div class="container">
+        <header class="header">
+            <h1>My Waste Pickup Schedules</h1>
+            <a href="/resident/dashboard/" class="back-link">Back to Dashboard</a>
+        </header>
 
-    {% if messages %}
-    <div>
-        {% for message in messages %}
-        <p>{{ message }}</p>
-        {% endfor %}
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <p class="message">{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <section class="create-schedule">
+            <h2>Create New Schedule</h2>
+            <form method="post" class="schedule-form">
+                {% csrf_token %}
+                <input type="hidden" name="create_schedule" value="1">
+
+                <div class="form-group">
+                    <label for="waste_type">Waste Type:</label>
+                    <select name="waste_type" id="waste_type" required>
+                        {% for waste_type in waste_types %}
+                        <option value="{{ waste_type.id }}">{{ waste_type.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="frequency">Frequency:</label>
+                    <select name="frequency" id="frequency" required>
+                        {% for value, label in frequency_choices.items %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="pickup_day">Pickup Day:</label>
+                    <select name="pickup_day" id="pickup_day" required>
+                        {% for value, label in day_choices.items %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="pickup_time">Pickup Time:</label>
+                    <input type="time" name="pickup_time" id="pickup_time" required>
+                </div>
+
+                <button type="submit" class="btn">Create Schedule</button>
+            </form>
+        </section>
+
+        <section class="my-schedules">
+            <h2>My Schedules</h2>
+            {% if schedules %}
+            <table class="schedules-table">
+                <thead>
+                    <tr>
+                        <th>Waste Type</th>
+                        <th>Frequency</th>
+                        <th>Day</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for schedule in schedules %}
+                    <tr>
+                        <td>{{ schedule.waste_type.name }}</td>
+                        <td>{{ schedule.get_frequency_display }}</td>
+                        <td>{{ schedule.get_pickup_day_display }}</td>
+                        <td>{{ schedule.pickup_time }}</td>
+                        <td class="{% if schedule.is_active %}active{% else %}inactive{% endif %}">
+                            {% if schedule.is_active %}Active{% else %}Inactive{% endif %}
+                        </td>
+                        <td>
+                            <form method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="schedule_id" value="{{ schedule.id }}">
+                                <input type="hidden" name="update_schedule" value="1">
+                                <button type="submit" class="btn-edit">Edit</button>
+                            </form>
+                            <form method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="schedule_id" value="{{ schedule.id }}">
+                                <input type="hidden" name="delete_schedule" value="1">
+                                <button type="submit" class="btn-delete">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No pickup schedules found.</p>
+            {% endif %}
+        </section>
+
+        <section class="upcoming-pickups">
+            <h2>Upcoming Pickups</h2>
+            {% if upcoming_pickups %}
+            <table class="pickups-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Waste Type</th>
+                        <th>Pickup Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pickup in upcoming_pickups %}
+                    <tr>
+                        <td>{{ pickup.pickup_date|date:"Y-m-d" }}</td>
+                        <td>{{ pickup.pickup_date|time }}</td>
+                        <td>{{ pickup.bin.waste_type.name }}</td>
+                        <td>{{ pickup.get_status_display }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No upcoming pickups scheduled.</p>
+            {% endif %}
+        </section>
     </div>
-    {% endif %}
-
-    <h2>Create New Schedule</h2>
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="create_schedule" value="1">
-
-        <div>
-            <label>Waste Type:</label>
-            <select name="waste_type" required>
-                {% for waste_type in waste_types %}
-                <option value="{{ waste_type.id }}">{{ waste_type.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div>
-            <label>Frequency:</label>
-            <select name="frequency" required>
-                {% for value, label in frequency_choices.items %}
-                <option value="{{ value }}">{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div>
-            <label>Pickup Day:</label>
-            <select name="pickup_day" required>
-                {% for value, label in day_choices.items %}
-                <option value="{{ value }}">{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div>
-            <label>Pickup Time:</label>
-            <input type="time" name="pickup_time" required>
-        </div>
-
-        <button type="submit">Create Schedule</button>
-    </form>
-
-    <h2>My Schedules</h2>
-    {% if schedules %}
-    <table>
-        <thead>
-            <tr>
-                <th>Waste Type</th>
-                <th>Frequency</th>
-                <th>Day</th>
-                <th>Time</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for schedule in schedules %}
-            <tr>
-                <td>{{ schedule.waste_type.name }}</td>
-                <td>{{ schedule.get_frequency_display }}</td>
-                <td>{{ schedule.get_pickup_day_display }}</td>
-                <td>{{ schedule.pickup_time }}</td>
-                <td>{% if schedule.is_active %}Active{% else %}Inactive{% endif %}</td>
-                <td>
-                    <form method="post" style="display: inline;">
-                        {% csrf_token %}
-                        <input type="hidden" name="schedule_id" value="{{ schedule.id }}">
-                        <input type="hidden" name="update_schedule" value="1">
-                        <button type="submit">Edit</button>
-                    </form>
-                    <form method="post" style="display: inline;">
-                        {% csrf_token %}
-                        <input type="hidden" name="schedule_id" value="{{ schedule.id }}">
-                        <input type="hidden" name="delete_schedule" value="1">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>No pickup schedules found.</p>
-    {% endif %}
-
-    <h2>Upcoming Pickups</h2>
-    {% if upcoming_pickups %}
-    <table>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Waste Type</th>
-                <th>Pickup Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for pickup in upcoming_pickups %}
-            <tr>
-                <td>{{ pickup.pickup_date|date:"Y-m-d" }}</td>
-                <td>{{ pickup.pickup_date|time }}</td>
-                <td>{{ pickup.bin.waste_type.name }}</td>
-                <td>{{ pickup.get_status_display }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>No upcoming pickups scheduled.</p>
-    {% endif %}
 </body>
 
 </html>

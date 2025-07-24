@@ -49,13 +49,15 @@
                         <span>Messages</span>
                     </div>
                 </a>
-                <div class="nav-item">
-                    <i class="fas fa-gear"></i>
-                    <span>Settings</span>
-                </div>
+                <a href="{% url 'edit_profile' %}" style="text-decoration: none; color: inherit;">
+                    <div class="nav-item">
+                        <i class="fas fa-gear"></i>
+                        <span>Settings</span>
+                    </div>
+                </a>
                 <a href="{% url 'logout' %}" style="text-decoration: none; color: inherit;">
                     <div class="nav-item">
-                        <i class="fas fa-envelope"></i>
+                        <i class="fas fa-gear"></i>
                         <span>Log Out</span>
                     </div>
                 </a>

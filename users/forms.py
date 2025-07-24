@@ -1,5 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from django import forms
+from users.models import User
+
 
 class VictimRegistrationForm(UserCreationForm):
     class Meta:
@@ -12,4 +14,9 @@ class VictimRegistrationForm(UserCreationForm):
         if commit:
             user.save()
         return user
-    
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'phone_number']  # exclude user_type

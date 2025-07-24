@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .forms import VictimRegistrationForm    
+from django.contrib.auth.decorators import login_required
+from .forms import VictimRegistrationForm, UserProfileForm
 
 def home(request):
     return render(request, 'home.html')
@@ -51,3 +52,23 @@ def register_resident(request):
         form = VictimRegistrationForm()
     
     return render(request, "signup.html", {"form": form})
+
+
+@login_required(login_url='/login/')
+def edit_profile(request):
+    user = request.user
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            if user.user_type == 'resident':
+                return redirect('resident-dashboard')
+            else:
+                return redirect('collector-dashboard')
+                
+
+    else:
+        form = UserProfileForm(instance=user)
+
+    return render(request, 'edit_profile.html', {'form': form})

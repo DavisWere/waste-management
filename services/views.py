@@ -105,4 +105,65 @@ def resident_dashboard(request):
 def collector_dashboard(request):
     return render(request, 'collector_dashboard.html')
 
+
+@login_required(login_url='/login/')
+def collector_pickups(request):
+    if request.user.user_type != 'garbage_collector':
+        return redirect('home')
+    
+    # Get today's date for filtering
+    today = timezone.now().date()
+    
+    # Get all pickups assigned to this collector
+    pickups = WastePickup.objects.filter(
+        Q(driver_name__icontains=request.user.username) |
+        Q(driver_contact=request.user.phone_number)
+    ).order_by('pickup_date')
+    
+    # Filter pickups by status if requested
+    status_filter = request.GET.get('status')
+    if status_filter:
+        pickups = pickups.filter(status=status_filter)
+    
+    # Separate upcoming and past pickups
+    upcoming_pickups = pickups.filter(pickup_date__gte=today)
+    past_pickups = pickups.filter(pickup_date__lt=today)
+    
+    # Handle status updates
+    if request.method == 'POST' and 'update_status' in request.POST:
+        pickup_id = request.POST.get('pickup_id')
+        new_status = request.POST.get('new_status')
+        notes = request.POST.get('notes', '')
+        
+        pickup = get_object_or_404(WastePickup, id=pickup_id)
+        pickup.status = new_status
+        pickup.notes = notes
+        
+        if new_status == 'in_progress':
+            pickup.driver_name = request.user.get_full_name()
+            pickup.driver_contact = request.user.phone_number
+        
+        if new_status == 'completed':
+            pickup.actual_pickup_date = timezone.now()
+        
+        pickup.save()
+        return redirect('collector_pickups')
+    
+    context = {
+        'upcoming_pickups': upcoming_pickups,
+        'past_pickups': past_pickups,
+        'status_choices': dict(WastePickup.PICKUP_STATUS),
+        'today': today,
+        'status_filter': status_filter
+    }
+    
+    return render(request, 'collector_pickups.html', context)
+
+def market_requirements_view(request):
+    requirements = MarketRequirement.objects.select_related('waste_type').order_by('-created_at')
+
+    context = {
+        'requirements': requirements
+    }
+    return render(request, 'market.html', context)
  

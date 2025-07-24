@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Market Requirements</title>
+</head>
+
+<body>
+
+    <h1>Active Market Requirements</h1>
+
+    <table class="data-table" border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Material type</th>
+                <th>Location</th>
+                <th>Weight</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requirements %}
+            <tr>
+                <td>{{ req.contact_person }}</td>
+                <td>{{ req.waste_type.name }}</td>
+                <td>{{ req.location }}</td>
+                <td>{{ req.required_quantity }} kg</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No market requirements available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+
+</html>

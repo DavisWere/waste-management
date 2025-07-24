@@ -2,84 +2,81 @@
 <html>
 
 <head>
-    <title>Pickup Management</title>
+    <title>Collector Pickups</title>
 </head>
 
 <body>
-    <h1>Waste Pickup Management</h1>
 
-    {% if messages %}
-    <div>
-        {% for message in messages %}
-        <p>{{ message }}</p>
-        {% endfor %}
-    </div>
-    {% endif %}
+    <h1>My Pickups</h1>
 
-    <h2>Scheduled Pickups</h2>
-    {% if scheduled_pickups %}
-    <table>
-        <thead>
-            <tr>
-                <th>Resident</th>
-                <th>Date & Time</th>
-                <th>Waste Type</th>
-                <th>Bin Size</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for pickup in scheduled_pickups %}
-            <tr>
-                <td>{{ pickup.user.username }}</td>
-                <td>{{ pickup.pickup_date }}</td>
-                <td>{{ pickup.bin.waste_type.name }}</td>
-                <td>{{ pickup.bin.get_size_display }}</td>
-                <td>{{ pickup.get_status_display }}</td>
-                <td>
-                    <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="pickup_id" value="{{ pickup.id }}">
-                        <input type="hidden" name="update_status" value="1">
+    <!-- Filter by status -->
+    <form method="get">
+        <label for="status">Filter by Status:</label>
+        <select name="status" id="status">
+            <option value="">-- All --</option>
+            {% for key, label in status_choices.items %}
+            <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ label }}</option>
 
-                        <select name="status">
-                            {% for value, label in status_choices.items %}
-                            <option value="{{ value }}" {% if pickup.status==value %}selected{% endif %}>{{ label }}
-                            </option>
-                            {% endfor %}
-                        </select>
-
-                        {% if pickup.status == 'completed' or request.POST.get('status') == 'completed' %}
-                        <div>
-                            <label>Weight Collected (kg):</label>
-                            <input type="number" name="weight_collected" step="0.01"
-                                value="{{ pickup.weight_collected|default:'' }}">
-                        </div>
-                        <div>
-                            <label>Driver Name:</label>
-                            <input type="text" name="driver_name" value="{{ pickup.driver_name|default:'' }}">
-                        </div>
-                        <div>
-                            <label>Driver Contact:</label>
-                            <input type="text" name="driver_contact" value="{{ pickup.driver_contact|default:'' }}">
-                        </div>
-                        <div>
-                            <label>Notes:</label>
-                            <textarea name="notes">{{ pickup.notes|default:'' }}</textarea>
-                        </div>
-                        {% endif %}
-
-                        <button type="submit">Update</button>
-                    </form>
-                </td>
-            </tr>
             {% endfor %}
-        </tbody>
-    </table>
+        </select>
+        <button type="submit">Apply</button>
+    </form>
+
+    <hr>
+
+    <h2>Upcoming Pickups</h2>
+    {% if upcoming_pickups %}
+    <ul>
+        {% for pickup in upcoming_pickups %}
+        <li>
+            <p><strong>Location:</strong> {{ pickup.location }}</p>
+            <p><strong>Date:</strong> {{ pickup.pickup_date }}</p>
+            <p><strong>Status:</strong> {{ pickup.get_status_display }}</p>
+
+            <!-- Status Update Form -->
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="pickup_id" value="{{ pickup.id }}">
+                <label for="new_status_{{ pickup.id }}">Change Status:</label>
+                <select name="new_status" id="new_status_{{ pickup.id }}">
+                    {% for key, label in status_choices.items %}
+                    <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select><br>
+
+                <label for="notes_{{ pickup.id }}">Notes:</label><br>
+                <textarea name="notes" id="notes_{{ pickup.id }}">{{ pickup.notes }}</textarea><br>
+
+                <button type="submit" name="update_status">Update</button>
+            </form>
+        </li>
+        <hr>
+        {% endfor %}
+    </ul>
     {% else %}
-    <p>No pickups scheduled.</p>
+    <p>No upcoming pickups.</p>
     {% endif %}
+
+    <h2>Past Pickups</h2>
+    {% if past_pickups %}
+    <ul>
+        {% for pickup in past_pickups %}
+        <li>
+            <p><strong>Location:</strong> {{ pickup.location }}</p>
+            <p><strong>Pickup Date:</strong> {{ pickup.pickup_date }}</p>
+            <p><strong>Status:</strong> {{ pickup.get_status_display }}</p>
+            <p><strong>Notes:</strong> {{ pickup.notes }}</p>
+            {% if pickup.actual_pickup_date %}
+            <p><strong>Completed On:</strong> {{ pickup.actual_pickup_date }}</p>
+            {% endif %}
+        </li>
+        <hr>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No past pickups.</p>
+    {% endif %}
+
 </body>
 
 </html>

@@ -53,10 +53,12 @@
                     <i class="fas fa-gear"></i>
                     <span>Settings</span>
                 </div>
-                <div class="nav-item">
-                    <i class="fas fa-gear"></i>
-                    <span>Log Out</span>
-                </div>
+                <a href="{% url 'logout' %}" style="text-decoration: none; color: inherit;">
+                    <div class="nav-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>Log Out</span>
+                    </div>
+                </a>
             </nav>
         </aside>
 

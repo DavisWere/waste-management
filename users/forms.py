@@ -6,7 +6,7 @@ from users.models import User
 class VictimRegistrationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "phone_number",  "password1", "password2"]
+        fields = ["username","first_name", "last_name", "email", "phone_number",  "password1", "password2"]
 
     def save(self, commit=True):
         user = super().save(commit=False)

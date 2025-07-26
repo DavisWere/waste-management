@@ -40,8 +40,10 @@
                     </div>
                 </a>
                 <div class="nav-item">
-                    <i class="fas fa-file-alt"></i>
-                    <span>Report</span>
+                    <a href="{% url 'download_user_report' %}" class="nav-item">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Download Report</span>
+                    </a>
                 </div>
                 <a href="{% url 'notifications' %}" style="text-decoration: none; color: inherit;">
                     <div class="nav-item">

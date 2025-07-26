@@ -7,6 +7,12 @@ from decimal import Decimal
 from .models import PickupSchedule, WastePickup, WasteType, MarketRequirement
 from payment.models import Payment
 from django.db.models import Q
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from io import BytesIO
+from .models import WasteTransaction
+import datetime
 
 @login_required(login_url='/login/')
 def waste_bins(request):
@@ -166,4 +172,43 @@ def market_requirements_view(request):
         'requirements': requirements
     }
     return render(request, 'market.html', context)
- 
+from django.http import HttpResponse
+from django.template.loader import get_template
+from django.contrib.auth.decorators import login_required
+from xhtml2pdf import pisa
+from io import BytesIO
+from .models import WasteTransaction
+from django.shortcuts import get_object_or_404
+import datetime
+
+@login_required
+def download_user_report_pdf(request):
+    # Get all transactions for the logged-in user
+    transactions = WasteTransaction.objects.filter(
+        pickup__user=request.user
+    ).order_by('-transaction_date')
+    
+    # Prepare context data
+    context = {
+        'user': request.user,
+        'transactions': transactions,
+        'date': datetime.datetime.now().strftime("%Y-%m-%d"),
+        'logo_path': 'static/images/gorescue_logo.png'  # Update with your logo path
+    }
+    
+    # Load template
+    template = get_template('transaction_pdf.html')
+    html = template.render(context)
+    
+    # Create PDF
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+    
+    if not pdf.err:
+        response = HttpResponse(result.getvalue(), content_type='application/pdf')
+        filename = f"gorescue_report_{request.user.username}_{datetime.datetime.now().strftime('%Y%m%d')}.pdf"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+    
+    return HttpResponse("Error generating PDF", status=500)
+

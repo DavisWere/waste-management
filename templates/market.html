@@ -1,39 +1,135 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
+    
 
 <head>
     <title>Market Requirements</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #4CAF50;
+        }
+
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #1E1E1E;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        .data-table th {
+            background-color: #2E2E2E;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .data-table tr:hover {
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #252525;
+        }
+
+        /* Empty State */
+        .data-table td[colspan] {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 10px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+
+        /* Status Indicators */
+        .active {
+            color: #4CAF50;
+        }
+
+        .pending {
+            color: #FFC107;
+        }
+
+        .expired {
+            color: #F44336;
+        }
+    </style>
 </head>
 
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>Active Market Requirements</h1>
+        </div>
 
-    <h1>Active Market Requirements</h1>
-
-    <table class="data-table" border="1">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Material type</th>
-                <th>Location</th>
-                <th>Weight</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for req in requirements %}
-            <tr>
-                <td>{{ req.contact_person }}</td>
-                <td>{{ req.waste_type.name }}</td>
-                <td>{{ req.location }}</td>
-                <td>{{ req.required_quantity }} kg</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4">No market requirements available.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Contact Person</th>
+                    <th>Material Type</th>
+                    <th>Location</th>
+                    <th>Weight (kg)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requirements %}
+                <tr>
+                    <td>{{ req.contact_person }}</td>
+                    <td>{{ req.waste_type.name }}</td>
+                    <td>{{ req.location }}</td>
+                    <td>{{ req.required_quantity }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No market requirements available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>

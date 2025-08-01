@@ -1,0 +1,7 @@
+{% for pickup in pickups %}
+{% if pickup.id %}
+<a href="{% url 'make_payment' pickup.id %}">Pay Now</a>
+{% else %}
+<span>Invalid Pickup</span>
+{% endif %}
+{% endfor %}

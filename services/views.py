@@ -103,9 +103,9 @@ def resident_pickup_schedules(request):
     return render(request, 'resident_pickups.html', context)
 
 
-@login_required(login_url='/login/')
 def resident_dashboard(request):
-    return render(request, 'resident_dashboard.html')
+    pickups = WastePickup.objects.filter(user=request.user)
+    return render(request, 'resident_dashboard.html', {'pickups': pickups})
 
 @login_required(login_url='/login/')
 def collector_dashboard(request):

@@ -1,0 +1,12 @@
+<h2>Select Pickup to Set Payment</h2>
+
+<ul>
+    {% for pickup in pickups %}
+    <li>
+        Pickup ID: {{ pickup.id }} | Scheduled: {{ pickup.scheduled_date }}
+        <a href="{% url 'set_payment' pickup.id %}">Set Payment</a>
+    </li>
+    {% empty %}
+    <li>No pickups available for payment.</li>
+    {% endfor %}
+</ul>

@@ -1,7 +1,10 @@
+# urls.py
 from django.urls import path
-from .views import make_payment, view_payments
+from . import views
 
 urlpatterns = [
-    path('payments/make/<int:transaction_id>/', make_payment, name='make_payment'),
-    path('payments/', view_payments, name='view_payments'),
+    path('collector/select-pickup/', views.select_pickup_for_payment, name='select_pickup'),
+    path('collector/pickup/<int:pickup_id>/set-payment/', views.set_payment, name='set_payment'),
+    path('resident/pickup/<int:pickup_id>/pay/', views.make_payment, name='make_payment'),
+
 ]

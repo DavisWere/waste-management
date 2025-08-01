@@ -92,8 +92,8 @@ DATABASES = {
         'NAME': 'railway',
         'USER': os.getenv('USER'),
         'PASSWORD':  os.getenv('PASSWORD'),
-        'HOST': os.getenv('HOST'),
-        'PORT':os.getenv('PORT'),
+        'HOST': 'localhost',     # or 'localhost'
+        'PORT': '3306',   
         'CONN_MAX_AGE': 60,  # Keep connection alive for 60 seconds
         'OPTIONS': {
             'connect_timeout': 30,  # Increase connection timeout

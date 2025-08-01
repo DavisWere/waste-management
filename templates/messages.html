@@ -1,8 +1,8 @@
 {% load static %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/messages.css' %}">
+
 <div class="notification-container">
-    <!-- Messages Header -->
     <div class="notification-header">
         <h2>My Messages</h2>
         <div class="header-stats">
@@ -11,247 +11,118 @@
         </div>
     </div>
 
-    <!-- Messages Overview Stats -->
-    <div class="messages-overview">
-        <div class="overview-card">
-            <div class="card-content">
-                <div class="stat-number">{{ unread_count }}</div>
-                <div class="stat-label">Unread Messages</div>
-                <div class="stat-trend positive">{{ unread_percentage|default:"0" }}% of total</div>
-            </div>
-            <div class="card-icon unread">💬</div>
-        </div>
-
-        <div class="overview-card">
-            <div class="card-content">
-                <div class="stat-number">{{ notifications|length }}</div>
-                <div class="stat-label">Total Messages</div>
-                <div class="stat-trend neutral">This month</div>
-            </div>
-            <div class="card-icon total">📧</div>
-        </div>
-
-        <div class="overview-card">
-            <div class="card-content">
-                <div class="stat-number">{{ reply_rate|default:"95" }}%</div>
-                <div class="stat-label">Response Rate</div>
-                <div class="stat-trend positive">+5% improvement</div>
-            </div>
-            <div class="card-icon response">✅</div>
-        </div>
-    </div>
-
-    <!-- Send New Message Section -->
     <div class="send-notification">
-        <div class="section-header">
-            <h3>Send New Message</h3>
-            <button class="toggle-composer" type="button" onclick="toggleComposer()">
-                <span class="icon">➕</span>
-                <span class="text">New Message</span>
-            </button>
-        </div>
-        <div class="composer-form" id="composerForm">
-            <form method="post" class="message-form">
-                {% csrf_token %}
-                <input type="hidden" name="send_notification" value="1">
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="{{ form.recipient.id_for_label }}">Recipient</label>
-                        {{ form.recipient }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form.title.id_for_label }}">Subject</label>
-                        {{ form.title }}
-                    </div>
+        <h3>Send New Message</h3>
+        <form method="post" class="message-form">
+            {% csrf_token %}
+            <input type="hidden" name="send_notification" value="1">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.user.id_for_label }}">Recipient</label>
+                    {{ form.user }}
                 </div>
-
-                <div class="form-group full-width">
-                    <label for="{{ form.message.id_for_label }}">Message</label>
-                    {{ form.message }}
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">Subject</label>
+                    {{ form.title }}
                 </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        <span class="icon">📤</span>
-                        Send Message
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="toggleComposer()">
-                        Cancel
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Messages Filter and Search -->
-    <div class="messages-controls">
-        <div class="search-box">
-            <input type="text" placeholder="Search messages..." class="search-input" id="messageSearch">
-            <span class="search-icon">🔍</span>
-        </div>
-        <div class="filter-tabs">
-            <button class="tab-btn active" onclick="filterMessages('all')" data-filter="all">
-                All Messages
-            </button>
-            <button class="tab-btn" onclick="filterMessages('unread')" data-filter="unread">
-                Unread Only
-            </button>
-            <button class="tab-btn" onclick="filterMessages('sent')" data-filter="sent">
-                Sent Messages
-            </button>
-        </div>
-    </div>
-
-    <!-- Messages List -->
-    <div class="notifications-list">
-        <div class="messages-header">
-            <h3>Recent Messages</h3>
-            <div class="messages-count">
-                <span id="visibleCount">{{ notifications|length }}</span> messages
             </div>
-        </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.notification_type.id_for_label }}">Type</label>
+                    {{ form.notification_type }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.priority.id_for_label }}">Priority</label>
+                    {{ form.priority }}
+                </div>
+            </div>
+            <div class="form-group full-width">
+                <label for="{{ form.message.id_for_label }}">Message</label>
+                {{ form.message }}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">📤 Send Message</button>
+            </div>
+        </form>
+    </div>
 
-        <div class="messages-container">
-            {% for notification in notifications %}
-            <div class="notification {% if not notification.is_read %}unread{% endif %}"
-                data-type="{% if notification.sender %}received{% else %}sent{% endif %}"
-                data-message-id="{{ notification.id }}">
+    <div class="notifications-list">
+        <h3>Recent Messages</h3>
+        {% for notification in notifications %}
+        <div class="notification {% if not notification.is_read %}unread{% endif %}">
+            <div class="message-avatar">
+                <div class="avatar-circle">
+                    {% if notification.sender %}
+                    {{ notification.sender.username|first|upper }}
+                    {% else %}
+                    <span class="sent-icon">📤</span>
+                    {% endif %}
+                </div>
+                {% if not notification.is_read %}
+                <div class="unread-indicator"></div>
+                {% endif %}
+            </div>
 
-                <!-- Message Avatar and Status -->
-                <div class="message-avatar">
-                    <div class="avatar-circle">
+            <div class="message-content">
+                <div class="notification-header">
+                    <h4>{{ notification.title }}</h4>
+                    <div class="message-labels">
                         {% if notification.sender %}
-                        {{ notification.sender.username|first|upper }}
+                        <span class="label received">Received</span>
                         {% else %}
-                        <span class="sent-icon">📤</span>
+                        <span class="label sent">Sent</span>
+                        {% endif %}
+                        {% if notification.priority %}
+                        <span class="label priority-{{ notification.priority }}">
+                            {{ notification.priority|title }}
+                        </span>
                         {% endif %}
                     </div>
-                    {% if not notification.is_read %}
-                    <div class="unread-indicator"></div>
-                    {% endif %}
+                    <div class="notification-meta">
+                        <span class="message-time" title="{{ notification.created_at }}">
+                            {{ notification.created_at|timesince }} ago
+                        </span>
+                    </div>
                 </div>
 
-                <!-- Message Content -->
-                <div class="message-content">
-                    <div class="notification-header">
-                        <div class="message-title-section">
-                            <h4>{{ notification.title }}</h4>
-                            <div class="message-labels">
-                                {% if notification.sender %}
-                                <span class="label received">Received</span>
-                                {% else %}
-                                <span class="label sent">Sent</span>
-                                {% endif %}
-                                {% if notification.priority %}
-                                <span class="label priority-{{ notification.priority }}">
-                                    {{ notification.priority|title }}
-                                </span>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="notification-meta">
-                            <span class="message-time" title="{{ notification.created_at }}">
-                                {{ notification.created_at|timesince }} ago
-                            </span>
-                            <div class="message-actions-header">
-                                {% if not notification.is_read %}
-                                <form method="post" class="mark-read-form">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="mark_read" value="1">
-                                    <input type="hidden" name="notification_id" value="{{ notification.id }}">
-                                    <button type="submit" class="btn btn-ghost btn-sm mark-read-btn">
-                                        <span class="icon">✓</span>
-                                        Mark Read
-                                    </button>
-                                </form>
-                                {% endif %}
-                                <button class="btn btn-ghost btn-sm"
-                                    onclick="toggleMessageOptions({{ notification.id }})">
-                                    <span class="icon">⋯</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Message Body -->
-                    <div class="message-body">
-                        <p>{{ notification.message|linebreaks }}</p>
-                    </div>
-
-                    <!-- Message Options (Hidden by default) -->
-                    <div class="message-options" id="options-{{ notification.id }}" style="display: none;">
-                        <div class="options-buttons">
-                            {% if notification.sender %}
-                            <button class="btn btn-ghost btn-sm" onclick="toggleReply({{ notification.id }})">
-                                <span class="icon">↩️</span>
-                                Reply
-                            </button>
-                            {% endif %}
-                            <button class="btn btn-ghost btn-sm" onclick="forwardMessage({{ notification.id }})">
-                                <span class="icon">↪️</span>
-                                Forward
-                            </button>
-                            <button class="btn btn-ghost btn-sm delete-btn"
-                                onclick="deleteMessage({{ notification.id }})">
-                                <span class="icon">🗑️</span>
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Reply Form -->
-                    {% if notification.sender %}
-                    <div class="reply-form" id="reply-{{ notification.id }}" style="display: none;">
-                        <div class="reply-header">
-                            <h5>Reply to: {{ notification.title }}</h5>
-                            <button type="button" class="close-reply"
-                                onclick="toggleReply({{ notification.id }})">✕</button>
-                        </div>
-                        <form method="post" class="reply-message-form">
-                            {% csrf_token %}
-                            <input type="hidden" name="send_reply" value="1">
-                            <input type="hidden" name="original_id" value="{{ notification.id }}">
-                            <div class="form-group">
-                                <label for="reply_message_{{ notification.id }}">Your Reply</label>
-                                {{ reply_form.message }}
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    <span class="icon">📤</span>
-                                    Send Reply
-                                </button>
-                                <button type="button" class="btn btn-ghost btn-sm"
-                                    onclick="toggleReply({{ notification.id }})">
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    {% endif %}
+                <div class="message-body">
+                    <p>{{ notification.message|linebreaks }}</p>
                 </div>
+
+                {% if not notification.is_read %}
+                <form method="post" class="mark-read-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="mark_read" value="1">
+                    <input type="hidden" name="notification_id" value="{{ notification.id }}">
+                    <button type="submit" class="btn btn-secondary btn-sm">✓ Mark Read</button>
+                </form>
+                {% endif %}
+
+                {% if notification.sender %}
+                <div class="reply-section">
+                    <form method="post" class="reply-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="send_reply" value="1">
+                        <input type="hidden" name="original_id" value="{{ notification.id }}">
+                        <div class="form-group">
+                            <label for="reply_message_{{ notification.id }}">Reply</label>
+                            {{ reply_form.message }}
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-sm">📤 Send Reply</button>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
             </div>
-            {% empty %}
-            <div class="empty-state">
-                <div class="empty-icon">📭</div>
-                <h3>No messages found</h3>
-                <p>You don't have any messages yet. Send your first message above!</p>
-                <button class="btn btn-primary" onclick="toggleComposer()">
-                    <span class="icon">✉️</span>
-                    Send New Message
-                </button>
-            </div>
-            {% endfor %}
         </div>
-    </div>
-
-    <!-- Loading State (for dynamic content) -->
-    <div class="loading-state" id="loadingState" style="display: none;">
-        <div class="loading-spinner"></div>
-        <p>Loading messages...</p>
+        {% empty %}
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>No messages found</h3>
+            <p>You don't have any messages yet.</p>
+        </div>
+        {% endfor %}
     </div>
 </div>
-
-<script src="{% static 'js/messages.js' %}"></script>
 {% endblock %}

@@ -116,7 +116,7 @@ class WastePickup(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.user.username} - {self.pickup_date.strftime('%Y-%m-%d')}"
+        return f"created by {self.user.username} - {self.pickup_date.strftime('%Y-%m-%d')}"
     
     @property
     def is_completed(self):

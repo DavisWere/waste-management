@@ -1,12 +1,74 @@
-<h2>Select Pickup to Set Payment</h2>
+<!DOCTYPE html>
+<html>
 
-<ul>
-    {% for pickup in pickups %}
-    <li>
-        Pickup ID: {{ pickup.id }} | Scheduled: {{ pickup.scheduled_date }}
-        <a href="{% url 'set_payment' pickup.id %}">Set Payment</a>
-    </li>
-    {% empty %}
-    <li>No pickups available for payment.</li>
-    {% endfor %}
-</ul>
+<head>
+    <title>Set Payment</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 30px;
+            background-color: #f4f4f4;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .form-container {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 6px;
+            max-width: 500px;
+        }
+
+        form p {
+            margin-bottom: 15px;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        form input[type="text"],
+        form input[type="number"],
+        form select,
+        form textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Set Payment for Pickup #{{ pickup.id }}</h2>
+
+    <div class="form-container">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Save Payment</button>
+        </form>
+    </div>
+
+</body>
+
+</html>

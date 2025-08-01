@@ -1,6 +1,74 @@
-<h2>Set Payment for Pickup #{{ pickup.id }}</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save Payment</button>
-</form>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Select Pickup for Payment</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .pickup-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .pickup-item {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+
+        .pickup-item a {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .pickup-item a:hover {
+            background-color: #0056b3;
+        }
+
+        .pickup-item span {
+            display: inline-block;
+            margin-top: 8px;
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Select a Pickup to Pay For</h1>
+
+    <ul class="pickup-list">
+        {% for pickup in pickups %}
+        <li class="pickup-item">
+            <p><strong>Pickup ID:</strong> {{ pickup.id }}</p>
+            <p><strong>Status:</strong> {{ pickup.status }}</p>
+            {% if pickup.id %}
+            <a href="{% url 'make_payment' pickup.id %}">Pay Now</a>
+            {% else %}
+            <span>Invalid Pickup</span>
+            {% endif %}
+        </li>
+        {% empty %}
+        <li class="pickup-item">No pickups available.</li>
+        {% endfor %}
+    </ul>
+
+</body>
+
+</html>

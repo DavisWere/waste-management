@@ -15,5 +15,5 @@ class Payment(models.Model):
     paid_at = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
-        return f"Payment for Request #{self.service_request.pk}"
+        return f"Payment for Request #{self.amount}"
 

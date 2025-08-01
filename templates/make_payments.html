@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Make Payment</title>
+</head>
+
+<body>
+    <h1>Make Payment</h1>
+    <a href="{% url 'view_payments' %}">Back to Payments</a>
+
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h2>Transaction Details</h2>
+    <p>Transaction ID: {{ transaction.id }}</p>
+    <p>Amount Due: ${{ transaction.total_amount }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="amount" value="{{ transaction.total_amount }}">
+
+        <div>
+            <label>Payment Method:</label>
+            <select name="payment_method" required>
+                {% for value, label in payment_methods %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label>Transaction ID (if digital payment):</label>
+            <input type="text" name="transaction_id">
+        </div>
+
+        <button type="submit">Confirm Payment</button>
+    </form>
+</body>
+
+</html>

@@ -84,6 +84,7 @@ class PickupSchedule(models.Model):
     pickup_day = models.CharField(max_length=20, choices=DAY_CHOICES, null=True, blank=True)
     pickup_time = models.TimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -109,6 +110,7 @@ class WastePickup(models.Model):
     weight_collected = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)  # in kg
     driver_name = models.CharField(max_length=100, blank=True)
     driver_contact = models.CharField(max_length=20, blank=True)
+    amount_to_be_paid = models.FloatField()
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -168,7 +170,7 @@ class WasteTransaction(models.Model):
         ('processing', 'Processing'),
         ('disposal', 'Disposal'),
     ]
-    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='waste_transactions')
     pickup = models.ForeignKey(WastePickup, on_delete=models.CASCADE, related_name='transactions')
     transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
     buyer_company = models.CharField(max_length=200, blank=True)

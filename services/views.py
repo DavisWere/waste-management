@@ -63,10 +63,23 @@ def resident_pickup_schedules(request):
             # Handle schedule update
             elif 'update_schedule' in request.POST:
                 schedule = get_object_or_404(PickupSchedule, id=request.POST.get('schedule_id'), user=request.user)
-                schedule.waste_type_id = request.POST.get('waste_type')
-                schedule.frequency = request.POST.get('frequency')
-                schedule.pickup_day = request.POST.get('pickup_day')
-                schedule.pickup_time = request.POST.get('pickup_time')
+
+                # Safely get values from the form
+                waste_type = request.POST.get('waste_type')
+                frequency = request.POST.get('frequency')
+                pickup_day = request.POST.get('pickup_day')
+                pickup_time = request.POST.get('pickup_time')
+
+                # Update only if values are provided (avoid setting to None)
+                if waste_type:
+                    schedule.waste_type_id = waste_type
+                if frequency:
+                    schedule.frequency = frequency
+                if pickup_day:
+                    schedule.pickup_day = pickup_day
+                if pickup_time:
+                    schedule.pickup_time = pickup_time
+
                 schedule.save()
                 messages.success(request, "Schedule updated successfully!")
                 return redirect('pickup_schedules')
@@ -101,6 +114,7 @@ def resident_pickup_schedules(request):
         'day_choices': dict(PickupSchedule.DAY_CHOICES),
     }
     return render(request, 'resident_pickups.html', context)
+
 
 
 def resident_dashboard(request):

@@ -26,6 +26,9 @@ class Notification(models.Model):
     priority = models.CharField(max_length=10, choices=PRIORITY_LEVELS, default='medium')
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
     
     def __str__(self):
         return f"{self.user.username} - {self.title}"

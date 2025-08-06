@@ -51,6 +51,10 @@ class WasteBin(models.Model):
     status = models.CharField(max_length=20, choices=BIN_STATUS, default='active')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
     
     def __str__(self):
         return f"{self.bin_id} - {self.user.username}"
@@ -86,14 +90,17 @@ class PickupSchedule(models.Model):
         on_delete=models.CASCADE,
         limit_choices_to={'user_type': 'resident'},
         related_name='schedules')
-    waste_type = models.ForeignKey(WasteType, on_delete=models.CASCADE, null=True, blank=True)
-    frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES, null=True)
-    pickup_day = models.CharField(max_length=20, choices=DAY_CHOICES, null=True, blank=True)
+    waste_type = models.ForeignKey(WasteType, on_delete=models.CASCADE)
+    frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES)
+    pickup_day = models.CharField(max_length=20, choices=DAY_CHOICES)
     pickup_time = models.TimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
     
     def __str__(self):
         return f"{self.user.username} - {self.frequency} {self.pickup_day}"
@@ -130,6 +137,9 @@ class WastePickup(models.Model):
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
     
     def __str__(self):
         return f"created by {self.user.username} - {self.pickup_date.strftime('%Y-%m-%d')}"
@@ -165,6 +175,9 @@ class MarketRequirement(models.Model):
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
     
     def __str__(self):
         return f"{self.company_name} - {self.waste_type.name} - {self.required_quantity}kg"
@@ -196,6 +209,9 @@ class WasteTransaction(models.Model):
     transaction_date = models.DateTimeField(default=timezone.now)
     location = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
     
     def __str__(self):
         return f"{self.transaction_type} - {self.quantity}kg - ${self.total_amount}"

@@ -94,12 +94,6 @@
                             <form method="post" style="display: inline;">
                                 {% csrf_token %}
                                 <input type="hidden" name="schedule_id" value="{{ schedule.id }}">
-                                <input type="hidden" name="update_schedule" value="1">
-                                <button type="submit" class="btn-edit">Edit</button>
-                            </form>
-                            <form method="post" style="display: inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="schedule_id" value="{{ schedule.id }}">
                                 <input type="hidden" name="delete_schedule" value="1">
                                 <button type="submit" class="btn-delete">Delete</button>
                             </form>

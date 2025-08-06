@@ -1,74 +1,116 @@
-<!DOCTYPE html>
-<html>
+<style>
+    body {
+        background-color: #111;
+        color: #f8f8f8;
+        font-family: Arial, sans-serif;
+    }
 
-<head>
-    <title>Select Pickup for Payment</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
 
-        h1 {
-            color: #333;
-        }
+    th,
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #333;
+        text-align: left;
+    }
 
-        .pickup-list {
-            list-style: none;
-            padding: 0;
-        }
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
 
-        .pickup-item {
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-        }
+    select,
+    input[type="text"],
+    input[type="number"] {
+        background-color: #222;
+        color: #fff;
+        border: 1px solid #444;
+        padding: 8px;
+        border-radius: 4px;
+        width: 100%;
+    }
 
-        .pickup-item a {
-            display: inline-block;
-            margin-top: 8px;
-            padding: 6px 12px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
+    label {
+        font-weight: bold;
+        margin-top: 5px;
+    }
 
-        .pickup-item a:hover {
-            background-color: #0056b3;
-        }
+    button {
+        background-color: #00e6b8;
+        color: black;
+        font-weight: bold;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 5px;
+        transition: background-color 0.3s ease;
+    }
 
-        .pickup-item span {
-            display: inline-block;
-            margin-top: 8px;
-            color: #888;
-            font-style: italic;
-        }
-    </style>
-</head>
+    button:hover {
+        background-color: #00c6a0;
+    }
 
-<body>
+    button[name="cancel_payment"] {
+        background-color: #555;
+        color: white;
+    }
 
-    <h1>Select a Pickup to Pay For</h1>
+    button[name="cancel_payment"]:hover {
+        background-color: #777;
+    }
 
-    <ul class="pickup-list">
-        {% for pickup in pickups %}
-        <li class="pickup-item">
-            <p><strong>Pickup ID:</strong> {{ pickup.id }}</p>
-            <p><strong>Status:</strong> {{ pickup.status }}</p>
-            {% if pickup.id %}
-            <a href="{% url 'make_payment' pickup.id %}">Pay Now</a>
-            {% else %}
-            <span>Invalid Pickup</span>
-            {% endif %}
-        </li>
-        {% empty %}
-        <li class="pickup-item">No pickups available.</li>
+    tr:nth-child(even) {
+        background-color: #1a1a1a;
+    }
+
+    tr:nth-child(odd) {
+        background-color: #141414;
+    }
+</style>
+
+{% if unpaid_pickups %}
+<table>
+    <thead>
+        <tr>
+            <th>Pickup Date</th>
+            <th>Amount (KES)</th>
+            <th>Payment</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pickup in unpaid_pickups %}
+        <tr>
+            <td>{{ pickup.pickup_date }}</td>
+            <td>{{ pickup.amount_to_be_paid }}</td>
+            <td>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="pickup_id" value="{{ pickup.id }}">
+
+                    <label for="method_{{ pickup.id }}">Method:</label>
+                    <select name="method" id="method_{{ pickup.id }}" required>
+                        <option value="">--Select--</option>
+                        <option value="MOBILE">Mobile Money</option>
+                        <option value="CARD">Card</option>
+                        <option value="CASH">Cash</option>
+                    </select>
+
+                    <label for="transaction_{{ pickup.id }}">Transaction Code:</label>
+                    <input type="text" name="transaction_code" id="transaction_{{ pickup.id }}" required>
+                    <button type="submit" name="confirm_payment">Confirm Payment</button>
+                    <button type="submit" name="cancel_payment">Cancel</button>
+                </form>
+            </td>
+        </tr>
         {% endfor %}
-    </ul>
-
-</body>
-
-</html>
+    </tbody>
+</table>
+{% else %}
+<p>No payments to be made.</p>
+{% endif %}

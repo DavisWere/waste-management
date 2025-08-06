@@ -4,14 +4,14 @@ from .models import WasteBin, WasteType
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from decimal import Decimal
-from .models import PickupSchedule, WastePickup, WasteType, MarketRequirement
+from payment.models import Payment
+from .models import PickupSchedule, WastePickup, WasteType, MarketRequirement,  WasteTransaction
 from payment.models import Payment
 from django.db.models import Q
 from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from io import BytesIO
-from .models import WasteTransaction
 import datetime
 
 @login_required(login_url='/login/')
@@ -125,50 +125,64 @@ def resident_dashboard(request):
 def collector_dashboard(request):
     return render(request, 'collector_dashboard.html')
 
-
 @login_required(login_url='/login/')
 def collector_pickups(request):
     if request.user.user_type != 'collector':
         return redirect('home')
-    
-    # Get today's date for filtering
+
     today = timezone.now().date()
-    
-    # Get all pickups assigned to this collector
+
+    # Pickups assigned to the collector (by name or contact)
     pickups = WastePickup.objects.filter(
-    Q(driver_name=request.user) |
-    Q(driver_contact=request.user.phone_number)
+        Q(driver_name=request.user) |
+        Q(driver_contact=request.user.phone_number)
     ).order_by('pickup_date')
-    
-    # Filter pickups by status if requested
+
+    # Optional status filter
     status_filter = request.GET.get('status')
     if status_filter:
         pickups = pickups.filter(status=status_filter)
-    
-    # Separate upcoming and past pickups
+
     upcoming_pickups = pickups.filter(pickup_date__gte=today)
     past_pickups = pickups.filter(pickup_date__lt=today)
-    
-    # Handle status updates
-    if request.method == 'POST' and 'update_status' in request.POST:
-        pickup_id = request.POST.get('pickup_id')
-        new_status = request.POST.get('new_status')
-        notes = request.POST.get('notes', '')
-        
-        pickup = get_object_or_404(WastePickup, id=pickup_id)
-        pickup.status = new_status
-        pickup.notes = notes
-        
-        if new_status == 'in_progress':
-            pickup.driver_name = request.user
-            pickup.driver_contact = request.user.phone_number
-        
-        if new_status == 'completed':
-            pickup.actual_pickup_date = timezone.now()
-        
-        pickup.save()
-        return redirect('collector_pickups')
-    
+
+    if request.method == 'POST':
+        # Update pickup status
+        if 'update_status' in request.POST:
+            pickup_id = request.POST.get('pickup_id')
+            new_status = request.POST.get('new_status')
+            notes = request.POST.get('notes', '').strip()
+
+            pickup = get_object_or_404(WastePickup, id=pickup_id)
+            if pickup.driver_name == request.user or pickup.driver_contact == request.user.phone_number:
+                pickup.status = new_status
+                pickup.notes = notes
+
+                if new_status == 'in_progress':
+                    pickup.driver_name = request.user
+                    pickup.driver_contact = request.user.phone_number
+
+                if new_status == 'completed':
+                    pickup.actual_pickup_date = timezone.now()
+
+                pickup.save()
+
+        # Set or update payment amount
+        elif 'set_payment' in request.POST:
+            pickup_id = request.POST.get('pickup_id')
+            payment_amount = request.POST.get('amount_to_be_paid')
+
+            pickup = get_object_or_404(WastePickup, id=pickup_id)
+            if pickup.driver_name == request.user or pickup.driver_contact == request.user.phone_number:
+                try:
+                    pickup.amount_to_be_paid = float(payment_amount)
+                    pickup.save()
+                    messages.success(request, f"Payment of KES {payment_amount} set for pickup ID {pickup.id}")
+                except ValueError:
+                    messages.error(request, "Invalid amount entered. Please try again.")
+
+        return redirect(request.path + f"?status={status_filter}" if status_filter else request.path)
+
     context = {
         'upcoming_pickups': upcoming_pickups,
         'past_pickups': past_pickups,
@@ -176,8 +190,40 @@ def collector_pickups(request):
         'today': today,
         'status_filter': status_filter
     }
-    
+
     return render(request, 'collector_pickups.html', context)
+
+@login_required
+def resident_payments(request):
+    if request.method == "POST":
+        pickup = get_object_or_404(WastePickup, id=request.POST.get('pickup_id'))
+        
+        if 'confirm_payment' in request.POST:
+            method = request.POST.get('method')
+            transaction_code= request.POST.get('transaction_code')
+            if not method or not transaction_code:
+                messages.success(request, 'Please select payment method and enter transaction ID.')
+                return redirect('resident_payments')
+            
+            Payment.objects.create(
+                user=request.user,
+                waste=pickup,
+                amount=pickup.amount_to_be_paid,
+                method=method,
+                transaction_code=transaction_code,
+                is_paid=True,
+                paid_at=timezone.now()
+            )
+            messages.success(request, 'Payment confirmed successfully.')
+            return redirect('resident-dashboard')
+        elif 'cancel_payment' in request.POST:
+                messages.info(request, 'Payment cancelled.')
+        
+        return redirect('resident-dashboard')
+
+    unpaid_pickups = WastePickup.objects.filter(bin__user=request.user, amount_to_be_paid__gt=0, payment__isnull=True)
+    return render(request, 'make_payment.html', {'unpaid_pickups': unpaid_pickups})
+
 
 def market_requirements_view(request):
     requirements = MarketRequirement.objects.select_related('waste_type').order_by('-created_at')

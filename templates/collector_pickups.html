@@ -36,7 +36,8 @@
 
         select,
         textarea,
-        input[type="hidden"] {
+        input[type="hidden"],
+        input[type="number"] {
             width: 100%;
             padding: 10px;
             font-size: 1rem;
@@ -139,6 +140,21 @@
                 <textarea name="notes" placeholder="Optional notes..."></textarea>
                 <button type="submit" name="update_status">Update</button>
             </form>
+
+            <!-- Set Payment Form -->
+            <form method="post" style="margin-top: 10px;">
+                {% csrf_token %}
+                <input type="hidden" name="pickup_id" value="{{ pickup.id }}">
+                <label for="amount_{{ pickup.id }}">Set Payment Amount (KES):</label>
+                <input type="number" name="amount_to_be_paid" id="amount_{{ pickup.id }}" step="0.01"
+                    value="{{ pickup.amount_to_be_paid }}" {% if pickup.amount_to_be_paid %}readonly{% endif %}>
+            
+                {% if not pickup.amount_to_be_paid %}
+                <button type="submit" name="set_payment">Set Payment</button>
+                {% else %}
+                <span class="badge bg-success">Payment Set</span>
+                {% endif %}
+            </form>
         </li>
         {% endfor %}
     </ul>
@@ -157,6 +173,9 @@
             <p><strong>Notes:</strong> {{ pickup.notes }}</p>
             {% if pickup.actual_pickup_date %}
             <p><strong>Completed On:</strong> {{ pickup.actual_pickup_date }}</p>
+            {% endif %}
+            {% if pickup.amount_to_be_paid %}
+            <p><strong>Amount (KES):</strong> {{ pickup.amount_to_be_paid }}</p>
             {% endif %}
         </li>
         {% endfor %}

@@ -3,6 +3,9 @@
 
 <head>
     <title>Collector Pickups</title>
+    <h2>
+        <a href="/collector/dashboard/">Back to Dashboard</a>
+    </h2>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -127,16 +130,13 @@
                 {% csrf_token %}
                 <input type="hidden" name="pickup_id" value="{{ pickup.id }}">
                 <label for="new_status_{{ pickup.id }}">Change Status:</label>
-                <select name="status" id="status">
-                    <option value="">-- All --</option>
+                <select name="new_status" id="new_status_{{ pickup.id }}">
+                    <option value="">-- Select --</option>
                     {% for key, label in status_choices.items %}
-                    <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ label }}</option>
+                    <option value="{{ key }}">{{ label }}</option>
                     {% endfor %}
                 </select>
-
-                <label for="notes_{{ pickup.id }}">Notes:</label>
-                <textarea name="notes" id="notes_{{ pickup.id }}">{{ pickup.notes }}</textarea>
-
+                <textarea name="notes" placeholder="Optional notes..."></textarea>
                 <button type="submit" name="update_status">Update</button>
             </form>
         </li>

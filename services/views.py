@@ -114,7 +114,7 @@ def collector_dashboard(request):
 
 @login_required(login_url='/login/')
 def collector_pickups(request):
-    if request.user.user_type != 'garbage_collector':
+    if request.user.user_type != 'collector':
         return redirect('home')
     
     # Get today's date for filtering
@@ -122,8 +122,8 @@ def collector_pickups(request):
     
     # Get all pickups assigned to this collector
     pickups = WastePickup.objects.filter(
-        Q(driver_name__icontains=request.user.username) |
-        Q(driver_contact=request.user.phone_number)
+    Q(driver_name=request.user) |
+    Q(driver_contact=request.user.phone_number)
     ).order_by('pickup_date')
     
     # Filter pickups by status if requested
@@ -146,7 +146,7 @@ def collector_pickups(request):
         pickup.notes = notes
         
         if new_status == 'in_progress':
-            pickup.driver_name = request.user.get_full_name()
+            pickup.driver_name = request.user
             pickup.driver_contact = request.user.phone_number
         
         if new_status == 'completed':
@@ -172,14 +172,7 @@ def market_requirements_view(request):
         'requirements': requirements
     }
     return render(request, 'market.html', context)
-from django.http import HttpResponse
-from django.template.loader import get_template
-from django.contrib.auth.decorators import login_required
-from xhtml2pdf import pisa
-from io import BytesIO
-from .models import WasteTransaction
-from django.shortcuts import get_object_or_404
-import datetime
+
 
 @login_required
 def download_user_report_pdf(request):

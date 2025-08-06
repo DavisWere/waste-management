@@ -38,7 +38,11 @@ class WasteBin(models.Model):
         ('full', 'Full'),
     ]
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bins')
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE, 
+        limit_choices_to={'user_type': 'resident'},
+        related_name='bins')
     bin_id = models.CharField(max_length=50, unique=True, null=True, blank=True)
     size = models.CharField(max_length=20, choices=BIN_SIZES)
     waste_type = models.ForeignKey(WasteType, on_delete=models.CASCADE)
@@ -78,7 +82,10 @@ class PickupSchedule(models.Model):
         ('sunday', 'Sunday'),
     ]
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schedules')
+    user = models.ForeignKey(User, 
+        on_delete=models.CASCADE,
+        limit_choices_to={'user_type': 'resident'},
+        related_name='schedules')
     waste_type = models.ForeignKey(WasteType, on_delete=models.CASCADE, null=True, blank=True)
     frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES, null=True)
     pickup_day = models.CharField(max_length=20, choices=DAY_CHOICES, null=True, blank=True)
@@ -101,14 +108,23 @@ class WastePickup(models.Model):
         ('missed', 'Missed'),
     ]
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pickups')
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        limit_choices_to={'user_type': 'collector'},
+        related_name='pickups')
     bin = models.ForeignKey(WasteBin, on_delete=models.CASCADE)
     schedule = models.ForeignKey(PickupSchedule, on_delete=models.CASCADE, null=True, blank=True)
     pickup_date = models.DateTimeField()
     actual_pickup_date = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=PICKUP_STATUS, default='scheduled')
     weight_collected = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)  # in kg
-    driver_name = models.CharField(max_length=100, blank=True)
+    driver_name = models.ForeignKey(
+        User,
+        max_length=24,
+        blank=True, 
+        on_delete=models.CASCADE,
+        limit_choices_to={'user_type': 'collector'},)
     driver_contact = models.CharField(max_length=20, blank=True)
     amount_to_be_paid = models.FloatField()
     notes = models.TextField(blank=True)

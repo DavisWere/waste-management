@@ -23,7 +23,7 @@ def login_view(request):
             # Redirect based on user type
             if user.user_type == "resident":
                 return redirect("resident-dashboard")
-            elif user.user_type == "garbage_collector": 
+            elif user.user_type == "collector": 
                 return redirect("collector-dashboard")
             elif user.is_superuser:
                 return redirect("admin-dashboard")

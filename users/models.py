@@ -5,8 +5,7 @@ from django.core.validators import RegexValidator
 class User(AbstractUser):
     USER_TYPES = [
         ('resident', 'Resident'),
-        ('garbage_collector', 'Garbage Collection Company'),
-        ('municipal_authority', 'Municipal Authority'),
+        ('collector', 'Garbage Collection Company'),
     ]
     phone_regex = RegexValidator(
     regex=r'^\+\d{1,3}\d{9}$',  

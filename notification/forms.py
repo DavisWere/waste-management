@@ -8,7 +8,7 @@ User = get_user_model()
 
 class NotificationForm(forms.ModelForm):
     user = forms.ModelChoiceField(
-        queryset=User.objects.filter(user_type='resident'),  # Will be set in __init__
+        queryset=User.objects.none(),  # Will be set in __init__
         label='Recipient',
         widget=forms.Select(attrs={'class': 'form-control'})
     )
@@ -33,7 +33,7 @@ class NotificationForm(forms.ModelForm):
             elif current_user.user_type == 'garbage_collector':
                 self.fields['user'].queryset = User.objects.filter(user_type='resident')
             else:
-                self.fields['user'].queryset = User.objects.none()
+                self.fields['user'].queryset = User.objects.all()
 
 class ReplyForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}))

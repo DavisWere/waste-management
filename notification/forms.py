@@ -1,5 +1,3 @@
-
-
 from django import forms
 from django.contrib.auth import get_user_model
 from .models import Notification
@@ -8,7 +6,7 @@ User = get_user_model()
 
 class NotificationForm(forms.ModelForm):
     user = forms.ModelChoiceField(
-        queryset=User.objects.all(),  # Will be set in __init__
+        queryset=User.objects.all(),  
         label='Recipient',
         widget=forms.Select(attrs={'class': 'form-control'})
     )
